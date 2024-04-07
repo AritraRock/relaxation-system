@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to AiYogi</title>
+    <link rel="stylesheet" href="../static/style.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lusitana&display=swap">
+    <script src="https://cdn.jsdelivr.net/npm/@ffmpeg/ffmpeg/dist/ffmpeg.min.js"></script>
+</head>
+<body>
+</head>
+<body>
+    <div class="bg-[#BLUE] w-[100vw] h-[100vh]">
+        <div class="bg-lightGray border-white border border-t-0 border-l-0 border-r-0 flex items-center justify-center">
+            <nav class=" w-10/12 flex justify-between text-white font-bold text-2xl p-2">
+                <h1>Welcome to AiYogi</h1>
+                <button onclick="logout()">Log out</button>
+            </nav>
+        </div>
+        <div class="flex flex-col justify-center items-center mt-12">
+            <video id="videoElement" autoplay></video>
+            <div class="sky-btn font-bold rounded-lg text-lg ">
+                <button id="startButton" class=" text-center ">Start Session</button>
+            </div>
+            <div class="sky-btn font-bold rounded-lg text-lg">
+                <button id="stopButton" class="text-center" disabled>Stop Session</button>
+            </div>
+        </div>
+        <div class=" border-white flex items-center justify-center mt-12">
+            <section class="w-10/12 flex text-white justify-around">
+
+                <div class="bg-white rounded-lg w_200px hover:shadow-lg">
+                    <img src="../static/Images/Thermal.jpeg" alt="" class="rounded-t-lg" width="100%" style="aspect-ratio: 4/3;">
+                    <div class="bg-[#BLUE] yellow-btn rounded-lg mt-4 hover:bg-blue-500 transition-all">
+                        <a class="font-bold text-lg " href="http://127.0.0.1:8052/process-thermal-images">Check Thermal</a>
+                    </div>
+                    <div class="yellow-txt mt-4">
+                        <li>Thermography</li>
+                        <li>Thermal infrared</li>
+                        <li>Thermal energy from skin</li>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg w_200px hover:shadow-lg">
+                    <img src="../static/Images/Visual.jpeg" alt="" class="rounded-t-lg" width="100%" style="aspect-ratio: 4/3;">
+                    <div class="bg-[#BLUE] green-btn rounded-lg mt-4 hover:bg-blue-500 transition-all">
+                        <a class="font-bold text-lg " href="http://127.0.0.1:8053/process-eye-tracking">Check Visual</a>
+                    </div>
+                    <div class="green-txt mt-4">
+                        <li>Visual structure and element</li>
+                        <li>Explanation and description</li>
+                        <li>Color, line, texture and scale</li>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg w_200px hover:shadow-lg">
+                    <img src="../static/Images/heartbeat.jpeg" alt="" class="rounded-t-lg" width="100%" style="aspect-ratio: 4/3;">
+                    <div class="bg-[#BLUE] red-btn rounded-lg mt-4 hover:bg-blue-500 transition-all">
+                        <button class="font-bold text-lg ">Check Heartbeat</button>
+                    </div>
+                    <div class="red-txt mt-4 p-2">
+                        <li>Pulse rate measurement</li>
+                        <li>Cardiovascular rhythm</li>
+                        <li>Cardiac function assessment</li>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <div class="border-2 border-white flex items-center justify-center mt-20 pb-12">
+            <section class="w-10/12 flex items-center justify-center  font-bold text-lg">
+                <a href="http://127.0.0.1:8051/dash-app" class="sky-btn text-center rounded-lg">Posture Analysis</a>
+            </section>
+        </div>
+    </div>
+
+    <script>
+        function logout() {
+            // Perform logout action here, such as redirecting to logout endpoint
+            window.location.href = "/logout"; // Example: Redirecting to "/logout" endpoint
+        }
+        let stream;
+        let mediaRecorder;
+        const video = document.getElementById('videoElement');
+        const startButton = document.getElementById('startButton');
+        const stopButton = document.getElementById('stopButton');
+        const chunks = [];
+
+        startButton.addEventListener('click', startRecording);
+        stopButton.addEventListener('click', stopRecordingAndSave);
+        startButton.style.display = "inline-block"; // Show start button
+        stopButton.style.display = "none";
+        video.style.display= "none";
+
+        async function startRecording() {
+            try {
+                startButton.style.display = "none";
+                stopButton.style.display = "inline-block";
+                video.style.display= "inline-block";
+                stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                video.srcObject = stream;
+                mediaRecorder = new MediaRecorder(stream);
+                mediaRecorder.ondataavailable = handleDataAvailable;
+                mediaRecorder.start();
+                startButton.disabled = true;
+                stopButton.disabled = false;
+            } catch (error) {
+                console.error('Error accessing the webcam:', error);
+            }
+        }
+
+        function stopRecordingAndSave() {
+            startButton.style.display = "inline-block"; // Show start button
+            stopButton.style.display = "none";
+            video.style.display= "none";
+            mediaRecorder.stop();
+            stream.getTracks().forEach(track => track.stop());
+            video.srcObject = null;
+            startButton.disabled = false;
+            stopButton.disabled = true;
+        }
+
+        async function handleDataAvailable(event) {
+            chunks.push(event.data);
+            if (mediaRecorder.state === 'inactive') {
+                const blob = new Blob(chunks, { type: 'video/webm' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'recorded_video.webm';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+
+                // Convert to MP4 using FFmpeg.js
+                await convertToMP4(blob);
+            }
+        }
+
+        async function convertToMP4(webmBlob) {
+            const ffmpeg = FFmpeg.createFFmpeg({ log: true });
+            await ffmpeg.load();
+            ffmpeg.FS('writeFile', 'input.webm', await fetchFile(webmBlob));
+            await ffmpeg.run('-i', 'input.webm', 'output.mp4');
+            const mp4Data = ffmpeg.FS('readFile', 'output.mp4');
+            const mp4Blob = new Blob([mp4Data.buffer], { type: 'video/mp4' });
+            const url = URL.createObjectURL(mp4Blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'recorded_video.mp4';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            await ffmpeg.remove();
+        }
+
+        function fetchFile(blob) {
+            return new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.readAsArrayBuffer(blob);
+                reader.onloadend = () => {
+                    resolve(new Uint8Array(reader.result));
+                };
+            });
+        }
+    </script>
+</body>
+</html>

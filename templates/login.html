@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="./static/Images/RegisterYogaPic.png" type="image/x-icon">
+    <title>Log in - AiYogi</title>
+    <link rel="stylesheet" href="../static/style.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lusitana&display=swap">
+</head>
+<body>
+    <div class="wrapper">
+        <section class="flex bg-[#BLUE]">
+            <!-- left section -->
+            <section class="w-6/12 ">
+                <div class=" flex flex-col items-center gap-10 mt-20">
+                    <!-- heading -->
+                    <div class="">
+                        <h1 class=" text-white font-normal 
+                        font-lusitana text-6xl leading-10
+                        ">Welcome to AiYogi</h1>
+                    </div>
+                    <!-- yoga image -->
+                    <div class="">
+                        <img src="../static/Images/RegisterYogaPic.png" alt=""
+                        width="400px"
+                        class="rounded-xl">
+                    </div>
+                    <!-- tagline -->
+                    <div>
+                        <p class="text-white font-normal font-lusitana text-4xl leading-10">Perfect Exercise, One App Solution</p>
+                    </div>
+                </div>
+
+            </section>
+            <!-- right section -->
+            <section class="w-6/12">
+                <div class="bg-[#ffffff] py-6 flex flex-col  rounded-[5rem] rounded-r-none gap-5 h-screen">
+                    <!-- heading -->
+                    <!-- <div class="mx-auto">
+                        <h1 class="font-bold
+                        font-lusitana text-4xl leading-10
+                        ">Create Account</h1>
+                    </div> -->
+                    <!-- Sign Up option -->
+                    <button class="flex items-center border border-[#BLUE;] rounded-3xl p-2 mx-auto mt-10">
+                        <img src="../static/Images/GoogleLogo.jpg" alt=""
+                        width="45px" class="rounded-md">
+                        <p class="font-bold
+                        font-lusitana text-2xl leading-10">Continue with Google</p>
+                    </button>
+                    <p class="font-bold
+                    font-lusitana text-2xl leading-10 mx-auto">-OR-</p>
+
+                    <form id="myForm" method="post" class="flex flex-col gap-10 px-28 py-6 mt-10">
+                        <!-- <input type="text" placeholder="Full Name" class="placeholder:text-darkGray  font-bold font-lusitana text-2xl 
+                        leading-10 bg-[#ffffff] outline-none border-b border-black">
+                        <input type="text" placeholder="Gender" class="placeholder:text-darkGray font-bold font-lusitana text-2xl 
+                        leading-10 bg-[#ffffff] outline-none border-b border-black">
+                        <input type="number" placeholder="Age" class="placeholder:text-darkGray  font-bold font-lusitana text-2xl 
+                        leading-10 bg-[#ffffff] outline-none border-b border-black"> -->
+                        <input type="email" placeholder="Email Address" class="placeholder:text-darkGray  font-bold font-lusitana text-2xl 
+                        leading-10 bg-[#ffffff] outline-none border-b border-black">
+                        <input type="password" placeholder="Password" class="placeholder:text-darkGray  font-bold font-lusitana text-2xl 
+                        leading-10 bg-[#ffffff] outline-none border-b border-black">
+                        <a href="/landing-page" id="submitButton" class="cursor-pointer mx-auto px-9 py-1 bg-[#fffffff] rounded-full font-bold
+                        font-lusitana text-2xl leading-10 border border-[#BLUE;] rounded-3xl">Log in</a>
+                    </form>
+
+                    <div class="flex items-center -mt-7">
+                        <div class="mx-auto pl-28">
+                            <a href="/" class="hover:text-black text-lightGray font-bold font-lusitana text-2xl leading-10">Don't have an account ?
+                            </a>
+                            
+                        </div>
+                        <div class="">
+                            <img src="../static/Images/LockLogo.jpg" alt="" width="150px" class="rounded-full">
+                        </div>
+                    </div>
+                </div>
+                <script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                        document.getElementById('submitButton').addEventListener('click', function(event) {
+                            event.preventDefault(); // Prevent the default behavior of the form submission button
+                            // Handle form submission
+                            submitForm();
+                        });
+                    });
+                
+                    function submitForm() {
+                        // Get form data
+                        var formData = new FormData(document.getElementById('myForm'));
+
+                        // Convert form data to URL-encoded string
+                        var urlEncodedData = new URLSearchParams(formData).toString();
+
+                        // Array to store fetch promises
+                        var fetchPromises = [];
+
+                        // Push fetch promises for each server start request
+                        fetchPromises.push(fetch('/start-thermal', {
+                            method: 'POST',
+                            body: urlEncodedData,
+                            headers: {
+                                'Content-Type': 'application/x-www-form-urlencoded'
+                            }
+                        }));
+
+                        fetchPromises.push(fetch('/start-dashboard', {
+                            method: 'POST',
+                            body: urlEncodedData,
+                            headers: {
+                                'Content-Type': 'application/x-www-form-urlencoded'
+                            }
+                        }));
+
+                        fetchPromises.push(fetch('/start-eye', {
+                            method: 'POST',
+                            body: urlEncodedData,
+                            headers: {
+                                'Content-Type': 'application/x-www-form-urlencoded'
+                            }
+                        }));
+
+                        // Execute all fetch promises
+                        Promise.all(fetchPromises)
+                            .then(responses => {
+                                // Check if all responses are ok
+                                if (responses.every(response => response.ok)) {
+                                    console.log('All servers started successfully');
+                                    // Redirect to landing page after starting servers
+                                    window.location.href = '/landing-page';
+                                } else {
+                                    throw new Error('One or more servers failed to start');
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error starting servers:', error);
+                            });
+                    }
+                </script>             
+            </section>
+        </section>
+    </div>
+</body>
+</html>
