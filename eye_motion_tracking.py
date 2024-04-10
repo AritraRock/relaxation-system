@@ -320,4 +320,4 @@ def show_output(n_clicks, contents, filename, start, duration, detectionCon, tra
         print("ERROR HERE")
 
 if __name__ == "__main__":
-    app.run_server()
+    app.run(debug=False,host='0.0.0.0')

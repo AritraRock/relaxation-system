@@ -357,4 +357,4 @@ def show_output(n_clicks, contents, filename, start, duration, detectionCon, tra
         return dash.no_update, dash.no_update, dash.no_update
 
 if __name__ == "__main__":
-    app.run_server()
+    app.run(debug=False,host='0.0.0.0')

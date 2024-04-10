@@ -52,20 +52,26 @@
                     <p class="font-bold
                     font-lusitana text-2xl leading-10 mx-auto">-OR-</p>
 
-                    <form id="myForm" method="post" class="flex flex-col gap-10 px-28 py-6 mt-10">
-                        <!-- <input type="text" placeholder="Full Name" class="placeholder:text-darkGray  font-bold font-lusitana text-2xl 
-                        leading-10 bg-[#ffffff] outline-none border-b border-black">
-                        <input type="text" placeholder="Gender" class="placeholder:text-darkGray font-bold font-lusitana text-2xl 
-                        leading-10 bg-[#ffffff] outline-none border-b border-black">
-                        <input type="number" placeholder="Age" class="placeholder:text-darkGray  font-bold font-lusitana text-2xl 
-                        leading-10 bg-[#ffffff] outline-none border-b border-black"> -->
-                        <input type="email" placeholder="Email Address" class="placeholder:text-darkGray  font-bold font-lusitana text-2xl 
-                        leading-10 bg-[#ffffff] outline-none border-b border-black">
-                        <input type="password" placeholder="Password" class="placeholder:text-darkGray  font-bold font-lusitana text-2xl 
-                        leading-10 bg-[#ffffff] outline-none border-b border-black">
-                        <a href="/landing-page" id="submitButton" class="cursor-pointer mx-auto px-9 py-1 bg-[#fffffff] rounded-full font-bold
-                        font-lusitana text-2xl leading-10 border border-[#BLUE;] rounded-3xl">Log in</a>
-                    </form>
+                    <form id="myForm" method="post" class="flex flex-col gap-3 px-28">
+                        <input
+                          name="email"
+                          type="email"
+                          placeholder="Email Address"
+                          class="placeholder:text-darkGray font-bold font-lusitana text-2xl leading-10 bg-[#ffffff] outline-none border-b border-black"
+                          required/>
+                        <input
+                          name="password"
+                          type="password"
+                          placeholder="Password"
+                          class="placeholder:text-darkGray font-bold font-lusitana text-2xl leading-10 bg-[#ffffff] outline-none border-b border-black"
+                          required/>
+                        <button
+                          id="submitButton"
+                          class="cursor-pointer mx-auto px-9 py-1 bg-[#fffffff] rounded-full font-bold font-lusitana text-2xl leading-10 border border-[#BLUE;] rounded-3xl"
+                        >
+                          Sign In
+                        </button>
+                      </form>
 
                     <div class="flex items-center -mt-7">
                         <div class="mx-auto pl-28">
@@ -79,19 +85,11 @@
                     </div>
                 </div>
                 <script>
-                    document.addEventListener('DOMContentLoaded', function() {
-                        document.getElementById('submitButton').addEventListener('click', function(event) {
-                            event.preventDefault(); // Prevent the default behavior of the form submission button
-                            // Handle form submission
-                            submitForm();
-                        });
-                    });
-                
                     function submitForm() {
                         // Get form data
-                        var formData = new FormData(document.getElementById('myForm'));
 
                         // Convert form data to URL-encoded string
+                        var formData = new FormData(document.getElementById('myForm'));
                         var urlEncodedData = new URLSearchParams(formData).toString();
 
                         // Array to store fetch promises
@@ -138,7 +136,57 @@
                                 console.error('Error starting servers:', error);
                             });
                     }
-                </script>             
+
+
+
+                    document
+                      .getElementById("myForm")
+                      .addEventListener("submit", async function (event) {
+                        event.preventDefault();
+                        const formData = new FormData(this);
+                        const jsonData = {};
+                        formData.forEach((value, key) => {
+                          jsonData[key] = value;
+                        });
+                        const response=await fetch("http://localhost:3000/login", {
+                          method: "POST",
+                          body: JSON.stringify(jsonData),
+                          headers: {
+                            "Content-Type": "application/json",
+                          },
+                        });
+
+                        const data = await response.json();
+
+                        if(response.status===200){
+                            console.log("Logged in successfully");
+                            submitForm();
+                        }
+                        else{
+                            console.error("Error submitting form data");
+                        }
+
+                        //   .then((response) => {
+                        //     if (response.ok) {
+                        //       // Handle successful response
+
+                        //       console.log("Logged in successfully");
+                        //       // Redirect to landing page
+                        //     //   window.location.href = "landing_page.html";
+                        //       submitForm();
+                        //     } else {
+                        //       // Handle error response
+                        //       console.error("Error submitting form data");
+                        //     }
+                        //   })
+                        //   .catch((error) => {
+                        //     console.error("Error submitting form data:", error);
+                        //   });
+                      });
+                
+                    
+                    
+                  </script>
             </section>
         </section>
     </div>

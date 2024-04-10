@@ -13,6 +13,7 @@ predictor = dlib.shape_predictor("models/dlib_landmark_predictor.dat")
 
 # Initialize Dash app
 app = Dash(__name__)
+app.title = 'Thermal Image Detector'
 
 # Update the layout to accept image input and display output
 app.layout = html.Div([
@@ -144,4 +145,4 @@ def update_output(n_clicks, contents):
 
 
 if __name__ == '__main__':
-    app.run_server(debug=True)
+    app.run(debug=False,host='0.0.0.0')
