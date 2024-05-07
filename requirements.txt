@@ -33,7 +33,7 @@ defusedxml==0.7.1
 dill==0.3.8
 diskcache==5.6.3
 distlib==0.3.8
-dlib @ file:///D:/Setup/Dlib_Windows_Python3.x-main/Dlib_Windows_Python3.x-main/dlib-19.24.1-cp311-cp311-win_amd64.whl#sha256=6f1a5ee167975d7952b28e0ce4495f1d9a77644761cf5720fb66d7c6188ae496
+
 et-xmlfile==1.1.0
 executing==1.2.0
 fastjsonschema==2.18.0
