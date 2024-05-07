@@ -88,4 +88,4 @@ def other_routes(path):
     return redirect(url_for('index'))  # Redirect to index page for other URLs
 
 if __name__ == '__main__':
-    app.run(debug=False,port=5500,host='0.0.0.0')  # You can set debug=False in production
+    app.run(debug=True,port=5500,host='0.0.0.0')  # You can set debug=False in production
